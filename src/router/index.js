@@ -1,14 +1,20 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Main',
+    name: 'main',
     component: Main
+  },
+  {
+    path: '*',
+    name: 'not-found',
+    component: NotFound
   }
 ]
 
