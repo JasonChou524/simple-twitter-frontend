@@ -4,18 +4,10 @@
       <div class="title">
         <h4>推薦跟隨</h4>
       </div>
-      <div
-        v-for="user of users"
-        :key="user.id"
-        class="user-card"
-      >
+      <div v-for="user of users" :key="user.id" class="user-card">
         <div class="profile">
           <div class="avatar">
-            <img
-              v-if="user.avatar"
-              :src="user.avatar"
-              alt="user's avatar"
-            />
+            <img v-if="user.avatar" :src="user.avatar" alt="user's avatar" />
             <img
               v-else
               src="~@/assets/image/tweet-default.png"
@@ -23,8 +15,8 @@
             />
           </div>
           <div class="info">
-            <h6>{{user.name}}</h6>
-            <p>@{{user.account}}</p>
+            <h6>{{ user.name }}</h6>
+            <p>@{{ user.account }}</p>
           </div>
         </div>
         <button
@@ -34,11 +26,7 @@
         >
           正在跟隨
         </button>
-        <button
-          v-else
-          class="follow-btn"
-          @click="addFollow(user.id)"
-        >
+        <button v-else class="follow-btn" @click="addFollow(user.id)">
           跟隨
         </button>
       </div>
@@ -382,17 +370,17 @@ const dummyUsers = [
   }
 ]
 export default {
-  data () {
+  data() {
     return {
       users: []
     }
   },
-  created () {
+  created() {
     this.fetchUsers()
   },
   methods: {
-    fetchUsers () {
-      this.users = dummyUsers.map(user => ({
+    fetchUsers() {
+      this.users = dummyUsers.map((user) => ({
         id: user.id,
         name: user.name,
         avatar: user.avatar,
@@ -400,8 +388,8 @@ export default {
         isFollowed: user.isFollowed
       }))
     },
-    addFollow (id) {
-      this.users = this.users.map(user => {
+    addFollow(id) {
+      this.users = this.users.map((user) => {
         if (user.id === id) {
           return {
             ...user,
@@ -411,8 +399,8 @@ export default {
         return user
       })
     },
-    removeFollow (id) {
-      this.users = this.users.map(user => {
+    removeFollow(id) {
+      this.users = this.users.map((user) => {
         if (user.id === id) {
           return {
             ...user,
