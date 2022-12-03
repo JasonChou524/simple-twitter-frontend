@@ -62,10 +62,12 @@ export default {
   },
   methods: {
     addLike(id) {
+      // TODO: API add like
       // 發送事件給父層
       this.$emit('afterAddLike', id)
     },
     removeLike(id) {
+      // TODO: API remove like
       // 發送事件給父層
       this.$emit('afterRemoveLike', id)
     }
