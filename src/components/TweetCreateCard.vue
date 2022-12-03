@@ -31,10 +31,6 @@ import { dayjs } from '@/utils/helpers'
 
 export default {
   props: {
-    tweets: {
-      type: Array,
-      require: true
-    },
     currentUser: {
       type: Object,
       require: true
@@ -71,7 +67,6 @@ export default {
       this.isBtnDisabled = true
     },
     textValidator() {
-      console.log(this.textLength)
       if (this.textLength <= 0) {
         this.isBtnDisabled = true
         return
