@@ -1,14 +1,13 @@
 <template>
   <div class="main-container">
     <div class="row">
-      <nav-tabs class="col-3" />
+      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
       <div class="main col-6">
         <div class="title">
           <h4>首頁</h4>
         </div>
         <tweet-create-card
-          :currentUser="currentUser"
-          :tweets="tweets"
+          class="tweet-create-card"
           @afterCreateTweet="afterCreateTweet"
         />
         <tweet-card
@@ -21,6 +20,11 @@
       </div>
       <user-popular class="col-3" />
     </div>
+    <tweet-create-modal
+      v-if="isCreateModalShow"
+      @afterCreateTweet="afterCreateTweet"
+      @clickCloseBtn="closeCreateModal"
+    />
   </div>
 </template>
 
@@ -29,6 +33,7 @@ import NavTabs from '../components/NavTabs.vue'
 import UserPopular from '../components/UserPopular.vue'
 import TweetCard from '../components/TweetCard.vue'
 import TweetCreateCard from '../components/TweetCreateCard.vue'
+import TweetCreateModal from '../components/TweetCreateModal.vue'
 
 const dummyTweets = [
   {
@@ -1643,12 +1648,14 @@ export default {
     NavTabs,
     UserPopular,
     TweetCard,
-    TweetCreateCard
+    TweetCreateCard,
+    TweetCreateModal
   },
   data() {
     return {
       tweets: [],
-      currentUser: { ...dummyUser }
+      currentUser: { ...dummyUser },
+      isCreateModalShow: false
     }
   },
   created() {
@@ -1692,7 +1699,15 @@ export default {
       })
     },
     afterCreateTweet(newTweet) {
+      console.log(newTweet)
       this.tweets.unshift(newTweet)
+      this.isCreateModalShow = false
+    },
+    openCreateModal() {
+      this.isCreateModalShow = true
+    },
+    closeCreateModal() {
+      this.isCreateModalShow = false
     }
   }
 }
@@ -1723,6 +1738,9 @@ export default {
     font-weight: 700;
     position: sticky;
     top: 0;
+  }
+  .tweet-create-card {
+    border-bottom: 10px solid $light-blue2;
   }
 }
 </style>

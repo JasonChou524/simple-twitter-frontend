@@ -42,7 +42,7 @@
           </a>
         </li>
       </ul>
-      <button class="btn">推文</button>
+      <button class="btn" @click="clickCreateBtn">推文</button>
     </div>
     <div class="nav-bottom">
       <a href="">
@@ -61,7 +61,13 @@
 </template>
 
 <script>
-export default {}
+export default {
+  methods: {
+    clickCreateBtn() {
+      this.$emit('clickCreateBtn')
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -94,6 +100,7 @@ export default {}
     color: #fff;
     font-size: 20px;
     font-weight: 400;
+    cursor: pointer;
   }
 }
 li {
@@ -122,4 +129,3 @@ a {
   padding: 20px;
 }
 </style>
->

@@ -29,13 +29,17 @@
 <script>
 import { dayjs } from '@/utils/helpers'
 
+const dummyUser = {
+  id: 5,
+  account: 'user4',
+  name: 'user4',
+  avatar: null,
+  introduction: 'Et voluptates alias eligendi perspiciatis.',
+  role: 'user',
+  front_cover: null
+}
+
 export default {
-  props: {
-    currentUser: {
-      type: Object,
-      require: true
-    }
-  },
   data() {
     return {
       text: '',
@@ -56,12 +60,11 @@ export default {
         id: dayjs().valueOf(),
         description: this.text,
         createdAt: dayjs().toISOString(),
-        User: this.currentUser,
+        User: dummyUser,
         isLiked: false,
         likeCount: 0,
         replyCount: 0
       }
-      // TODO: 發送事件到父層新增資料 將 newTweet 傳出
       this.$emit('afterCreateTweet', newTweet)
       this.text = ''
       this.isBtnDisabled = true
@@ -87,7 +90,6 @@ export default {
   padding: 16px 25px;
   border-left: 1px solid $light-blue2;
   border-right: 1px solid $light-blue2;
-  border-bottom: 10px solid $light-blue2;
 }
 .card-body {
   display: flex;
