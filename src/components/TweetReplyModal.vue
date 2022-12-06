@@ -13,19 +13,28 @@
       <div class="card-body">
         <div class="tweet-content">
           <div class="avatar avatar__author">
-            <img src="~@/assets/image/tweet-default.png" alt="tweet-default" />
+            <img
+              v-if="tweet.User.avatar"
+              :src="tweet.User.avatar"
+              alt="tweet-default"
+            />
+            <img
+              v-else
+              src="~@/assets/image/tweet-default.png"
+              alt="tweet-default"
+            />
           </div>
           <div class="tweet-info">
             <h6 class="title">
-              Apple
-              <span>@apple．4 months ago</span>
+              {{ tweet.User.name }}
+              <span>@{{ tweet.User.account }}．{{ tweet.createdAt }}</span>
             </h6>
             <p class="description">
-              Nulla Lorem mollit cupidatat irure. Laborum magna nulla duis
-              ullamco cillum dolor. Voluptate exercitation incididunt aliquip
-              deserunt reprehenderit elit laborum.
+              {{ tweet.description }}
             </p>
-            <p class="reply-target">回覆給 <span>@Mitsubishi</span></p>
+            <p class="reply-target">
+              回覆給 <span>@{{ tweet.User.account }}</span>
+            </p>
           </div>
         </div>
         <div class="reply-content">
@@ -48,7 +57,18 @@
 </template>
 
 <script>
-export default {}
+import { mapState } from 'vuex'
+
+export default {
+  computed: {
+    ...mapState(['isReplyModalOpen', 'tweet'])
+  },
+  methods: {
+    clickCloseBtn() {
+      this.$store.commit('closeReplyModal')
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -92,6 +112,7 @@ export default {}
   img {
     width: 50px;
     height: 50px;
+    border-radius: 50px;
   }
   &__author::after {
     content: '';

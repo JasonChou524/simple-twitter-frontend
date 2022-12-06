@@ -25,6 +25,7 @@
       @afterCreateTweet="afterCreateTweet"
       @clickCloseBtn="closeCreateModal"
     />
+    <tweet-reply-modal v-if="isReplyModalOpen" />
   </div>
 </template>
 
@@ -34,6 +35,9 @@ import UserPopular from '../components/UserPopular.vue'
 import TweetCard from '../components/TweetCard.vue'
 import TweetCreateCard from '../components/TweetCreateCard.vue'
 import TweetCreateModal from '../components/TweetCreateModal.vue'
+import TweetReplyModal from '../components/TweetReplyModal.vue'
+
+import { mapState } from 'vuex'
 
 const dummyTweets = [
   {
@@ -1649,7 +1653,8 @@ export default {
     UserPopular,
     TweetCard,
     TweetCreateCard,
-    TweetCreateModal
+    TweetCreateModal,
+    TweetReplyModal
   },
   data() {
     return {
@@ -1657,6 +1662,9 @@ export default {
       currentUser: { ...dummyUser },
       isCreateModalShow: false
     }
+  },
+  computed: {
+    ...mapState(['isReplyModalOpen'])
   },
   created() {
     this.fetchTweets()
