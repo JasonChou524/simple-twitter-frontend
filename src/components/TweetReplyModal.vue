@@ -51,12 +51,23 @@
             />
           </div>
           <div class="input-area">
-            <textarea class="text-area" name="" id="" placeholder="推你的回覆">
+            <textarea
+              v-model="text"
+              class="text-area"
+              name=""
+              id=""
+              placeholder="推你的回覆"
+              @input="textValidator"
+            >
             </textarea>
             <div class="reply-btn">
-              <button>回覆</button>
-              <span> 10/140 </span>
-              <span class="error-message">推文不得超過 140 字</span>
+              <button :disabled="isBtnDisabled">回覆</button>
+              <span :class="{ errorMessage: isBtnDisabled }">
+                {{ text.length }}/140
+              </span>
+              <span v-show="textOverflow" class="errorMessage"
+                >推文不得超過 140 字</span
+              >
             </div>
           </div>
         </div>
@@ -69,12 +80,31 @@
 import { mapState } from 'vuex'
 
 export default {
+  data() {
+    return {
+      text: '',
+      isBtnDisabled: true,
+      textOverflow: false
+    }
+  },
   computed: {
     ...mapState(['currentUser', 'isReplyModalOpen', 'tweet'])
   },
   methods: {
     clickCloseBtn() {
       this.$store.commit('closeReplyModal')
+    },
+    textValidator() {
+      if (this.text.length <= 0) {
+        this.isBtnDisabled = true
+        return
+      } else if (this.text.length > 140) {
+        this.isBtnDisabled = true
+        this.textOverflow = true
+        return
+      }
+      this.isBtnDisabled = false
+      this.textOverflow = false
     }
   }
 }
