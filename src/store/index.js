@@ -3,6 +3,14 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+const dummyUser = {
+  id: 2,
+  account: 'user1',
+  name: 'user1',
+  email: 'user1@example.com',
+  avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+  role: 'user'
+}
 const dummyTweet = {
   id: 1,
   UserId: 2,
@@ -39,6 +47,13 @@ export default new Vuex.Store({
   state() {
     return {
       isReplyModalOpen: false,
+      currentUser: {
+        id: -1,
+        name: '',
+        email: '',
+        image: '',
+        isAdmin: false
+      },
       tweet: {
         id: -1,
         UserId: -1,
@@ -55,6 +70,13 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setCurrentUser(state, currentUser) {
+      state.currentUser = {
+        ...state.currentUser,
+        // 利用取得的資料覆蓋 state 中的 currentUser
+        ...currentUser
+      }
+    },
     openReplyModal(state) {
       state.isReplyModalOpen = true
     },
@@ -64,12 +86,23 @@ export default new Vuex.Store({
     setTweet(state, tweet) {
       state.tweet = {
         ...state.tweet,
-        // 覆蓋 state 中的 tweet
+        // 利用取得的資料覆蓋 state 中的 tweet
         ...tweet
       }
     }
   },
   actions: {
+    fetchCurrentUser({ commit }) {
+      const { id, name, email, image, isAdmin } = dummyUser
+
+      commit('setCurrentUser', {
+        id,
+        name,
+        email,
+        image,
+        isAdmin
+      })
+    },
     getTweet({ commit }, tweetId) {
       // TODO: API GET tweets/:id
       console.log(tweetId)
