@@ -39,7 +39,16 @@
         </div>
         <div class="reply-content">
           <div class="avatar">
-            <img src="~@/assets/image/tweet-default.png" alt="tweet-default" />
+            <img
+              v-if="currentUser.avatar"
+              :src="currentUser.avatar"
+              alt="tweet-default"
+            />
+            <img
+              v-else
+              src="~@/assets/image/tweet-default.png"
+              alt="tweet-default"
+            />
           </div>
           <div class="input-area">
             <textarea class="text-area" name="" id="" placeholder="推你的回覆">
@@ -61,7 +70,7 @@ import { mapState } from 'vuex'
 
 export default {
   computed: {
-    ...mapState(['isReplyModalOpen', 'tweet'])
+    ...mapState(['currentUser', 'isReplyModalOpen', 'tweet'])
   },
   methods: {
     clickCloseBtn() {
