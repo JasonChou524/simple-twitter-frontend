@@ -61,7 +61,9 @@
             >
             </textarea>
             <div class="reply-btn">
-              <button :disabled="isBtnDisabled">回覆</button>
+              <button :disabled="isBtnDisabled" @click.stop="handleClick">
+                回覆
+              </button>
               <span :class="{ 'error-message': isBtnDisabled }">
                 {{ text.length }}/140
               </span>
@@ -78,6 +80,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { dayjs } from '@/utils/helpers'
 
 export default {
   data() {
@@ -105,6 +108,17 @@ export default {
       }
       this.isBtnDisabled = false
       this.textOverflow = false
+    },
+    handleClick() {
+      // TODO: API POST /tweets/:id/replies
+      this.$emit('afterCreateReply', {
+        id: dayjs().valueOf(),
+        comment: this.text,
+        UserId: this.currentUser.id,
+        TweetId: this.tweet.id,
+        updatedAt: dayjs().toISOString(),
+        createdAt: dayjs().toISOString()
+      })
     }
   }
 }

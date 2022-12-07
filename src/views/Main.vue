@@ -25,7 +25,10 @@
       @afterCreateTweet="afterCreateTweet"
       @clickCloseBtn="closeCreateModal"
     />
-    <tweet-reply-modal v-if="isReplyModalOpen" />
+    <tweet-reply-modal
+      v-if="isReplyModalOpen"
+      @afterCreateReply="afterCreateReply"
+    />
   </div>
 </template>
 
@@ -1716,6 +1719,19 @@ export default {
     },
     closeCreateModal() {
       this.isCreateModalShow = false
+    },
+    afterCreateReply(newReply) {
+      console.log(newReply)
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === newReply.TweetId) {
+          return {
+            ...tweet,
+            replyCount: tweet.replyCount + 1
+          }
+        }
+        return tweet
+      })
+      this.$store.commit('closeReplyModal')
     }
   }
 }
