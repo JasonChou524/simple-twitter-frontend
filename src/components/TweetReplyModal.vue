@@ -62,10 +62,10 @@
             </textarea>
             <div class="reply-btn">
               <button :disabled="isBtnDisabled">回覆</button>
-              <span :class="{ errorMessage: isBtnDisabled }">
+              <span :class="{ 'error-message': isBtnDisabled }">
                 {{ text.length }}/140
               </span>
-              <span v-show="textOverflow" class="errorMessage"
+              <span v-show="textOverflow" class="error-message"
                 >推文不得超過 140 字</span
               >
             </div>
@@ -231,7 +231,7 @@ export default {
     }
     span {
       margin-right: 10px;
-      &.errorMessage {
+      &.error-message {
         color: $Error;
       }
     }
