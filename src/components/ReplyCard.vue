@@ -1,31 +1,51 @@
 <template>
   <div class="reply-card">
     <div class="avatar">
-      <img src="~@/assets/image/tweet-default.png" alt="" />
+      <img v-if="reply.User.avatar" :src="reply.User.avatar" alt="" />
+      <img v-else src="~@/assets/image/tweet-default.png" alt="" />
     </div>
     <div class="card-info">
       <div class="title">
         <h6 class="reply-author">
-          Devon Lane <span>@devon_lane・12 小時</span>
+          {{ reply.User.name }}
+          <span>@d{{ reply.User.account }}・{{ createdFromNow }}</span>
         </h6>
-        <p class="reqly-target">回覆 <span>@apple</span></p>
+        <p class="reqly-target">
+          回覆 <span>@{{ tweetAccount }}</span>
+        </p>
       </div>
       <p class="description">
-        former apple engineer shares a simple DIY fix to seal your surgical mask
+        {{ reply.comment }}
       </p>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+import { dayjs } from '@/utils/helpers'
+export default {
+  props: {
+    reply: {
+      type: Object,
+      require: true
+    },
+    tweetAccount: {
+      type: String,
+      require: true
+    }
+  },
+  computed: {
+    createdFromNow() {
+      return dayjs(this.reply.createdAt).fromNow()
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .reply-card {
   padding: 16px 23px;
-  border: 1px solid $light-blue2;
-  border-top: 0;
+  border-bottom: 1px solid $light-blue2;
   display: flex;
 }
 .avatar {
