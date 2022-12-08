@@ -8,6 +8,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    // TODO: 修改根路徑為登入頁面
     path: '/',
     name: 'main',
     component: Main
@@ -56,11 +57,6 @@ const routes = [
     path: '/admin/users',
     name: 'admin-users',
     component: () => import('../views/AdminUsers.vue')
-  },
-  {
-    path: '/signin',
-    name: 'sign-in',
-    component: () => import('../views/SignIn.vue')
   },
   {
     path: '*',

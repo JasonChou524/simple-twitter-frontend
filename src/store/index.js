@@ -1,16 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-Vue.use(Vuex)
+import usersAPI from '@/apis/users'
+import { Toast } from '@/utils/helpers'
 
-const dummyUser = {
-  id: 2,
-  account: 'user1',
-  name: 'user1',
-  email: 'user1@example.com',
-  avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-  role: 'user'
-}
+Vue.use(Vuex)
 
 const dummyTweet = {
   id: 1,
@@ -105,11 +99,13 @@ export default new Vuex.Store({
       isReplyModalOpen: false,
       currentUser: {
         id: -1,
+        account: '',
         name: '',
         email: '',
-        image: '',
-        isAdmin: false
+        avatar: '',
+        role: ''
       },
+      isAuthenticated: false,
       tweet: {
         id: -1,
         UserId: -1,
@@ -132,6 +128,19 @@ export default new Vuex.Store({
         // 利用取得的資料覆蓋 state 中的 currentUser
         ...currentUser
       }
+      state.isAuthenticated = true
+    },
+    revokeAuthentication(state) {
+      state.currentUser = {
+        id: -1,
+        account: '',
+        name: '',
+        email: '',
+        avatar: '',
+        role: ''
+      }
+      state.isAuthenticated = false
+      localStorage.removeItem('token')
     },
     openReplyModal(state) {
       state.isReplyModalOpen = true
@@ -167,16 +176,14 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    fetchCurrentUser({ commit }) {
-      const { id, name, email, image, isAdmin } = dummyUser
-
-      commit('setCurrentUser', {
-        id,
-        name,
-        email,
-        image,
-        isAdmin
-      })
+    async fetchCurrentUser({ commit }) {
+      try {
+        const { data } = await usersAPI.getCurrentUser()
+        const { id, account, name, email, avatar, role } = data.user
+        commit('setCurrentUser', { id, account, name, email, avatar, role })
+      } catch (error) {
+        commit('revokeAuthentication')
+      }
     },
     fetchTweet({ commit }, tweetId) {
       console.log(`API /tweets/${tweetId}`)
