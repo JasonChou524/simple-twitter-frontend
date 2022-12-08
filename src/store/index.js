@@ -145,6 +145,10 @@ export default new Vuex.Store({
         ...tweet
       }
     },
+    createReply(state, newReply) {
+      state.tweet.Replies.unshift(newReply)
+      state.tweet.replyCount = state.tweet.replyCount + 1
+    },
     addLike(state) {
       // TODO: 改變 tweets
       state.tweet = {

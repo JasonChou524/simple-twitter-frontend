@@ -8,7 +8,7 @@
       <div class="title">
         <h6 class="reply-author">
           {{ reply.User.name }}
-          <span>@d{{ reply.User.account }}・{{ createdFromNow }}</span>
+          <span>@{{ reply.User.account }}・{{ createdFromNow }}</span>
         </h6>
         <p class="reqly-target">
           回覆 <span>@{{ tweetAccount }}</span>

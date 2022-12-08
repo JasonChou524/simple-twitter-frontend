@@ -2,7 +2,7 @@
   <div class="modal-background">
     <div class="modal-card">
       <div class="card-header">
-        <button class="close-btn" @click="clickCloseBtn">
+        <button class="close-btn" @click="closeReplyModal">
           <svg width="24" height="24" viewBox="0 0 24 24">
             <path
               d="M13.4141 11.9999L19.2071 6.20687C19.5971 5.81687 19.5971 5.18388 19.2071 4.79288C18.8171 4.40188 18.1841 4.40288 17.7931 4.79288L12.0001 10.5859L6.20712 4.79288C5.81712 4.40288 5.18412 4.40288 4.79312 4.79288C4.40212 5.18288 4.40312 5.81587 4.79312 6.20687L10.5861 11.9999L4.79312 17.7929C4.40312 18.1829 4.40312 18.8159 4.79312 19.2069C4.98812 19.4019 5.24312 19.4999 5.50012 19.4999C5.75712 19.4999 6.01212 19.4019 6.20712 19.2069L12.0001 13.4139L17.7931 19.2069C17.9881 19.4019 18.2431 19.4999 18.5001 19.4999C18.7571 19.4999 19.0121 19.4019 19.2071 19.2069C19.5971 18.8169 19.5971 18.1839 19.2071 17.7929L13.4141 11.9999Z"
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { dayjs } from '@/utils/helpers'
 
 export default {
@@ -94,9 +94,7 @@ export default {
     ...mapState(['currentUser', 'isReplyModalOpen', 'tweet'])
   },
   methods: {
-    clickCloseBtn() {
-      this.$store.commit('closeReplyModal')
-    },
+    ...mapMutations(['closeReplyModal']),
     textValidator() {
       if (this.text.length <= 0) {
         this.isBtnDisabled = true
@@ -111,10 +109,25 @@ export default {
     },
     handleClick() {
       // TODO: API POST /tweets/:id/replies
+      // "id": 156,
+      //   "comment": "我是一號君的留言小小一號君",
+      //   "createdAt": "2022-12-07T04:00:52.000Z",
+      //   "updatedAt": "2022-12-07T04:00:52.000Z",
+      //   "User": {
+      //       "id": 2,
+      //       "account": "user1",
+      //       "name": "user1",
+      //       "avatar": "https://randomuser.me/api/portraits/women/1.jpg"
+      //   }
       this.$emit('afterCreateReply', {
         id: dayjs().valueOf(),
         comment: this.text,
-        UserId: this.currentUser.id,
+        User: {
+          id: this.currentUser.id,
+          account: this.currentUser.account,
+          name: this.currentUser.name,
+          avatar: this.currentUser.avatar
+        },
         TweetId: this.tweet.id,
         updatedAt: dayjs().toISOString(),
         createdAt: dayjs().toISOString()
