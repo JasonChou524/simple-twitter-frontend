@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import usersAPI from '@/apis/users'
-import { Toast } from '@/utils/helpers'
+// import { Toast } from '@/utils/helpers'
 
 Vue.use(Vuex)
 
@@ -106,6 +106,7 @@ export default new Vuex.Store({
         role: ''
       },
       isAuthenticated: false,
+      token: '',
       tweet: {
         id: -1,
         UserId: -1,
@@ -131,14 +132,7 @@ export default new Vuex.Store({
       state.isAuthenticated = true
     },
     revokeAuthentication(state) {
-      state.currentUser = {
-        id: -1,
-        account: '',
-        name: '',
-        email: '',
-        avatar: '',
-        role: ''
-      }
+      state.currentUser = {}
       state.isAuthenticated = false
       localStorage.removeItem('token')
     },
@@ -181,8 +175,10 @@ export default new Vuex.Store({
         const { data } = await usersAPI.getCurrentUser()
         const { id, account, name, email, avatar, role } = data.user
         commit('setCurrentUser', { id, account, name, email, avatar, role })
+        return true
       } catch (error) {
         commit('revokeAuthentication')
+        return false
       }
     },
     fetchTweet({ commit }, tweetId) {
