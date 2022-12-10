@@ -41,7 +41,29 @@ const routes = [
   {
     path: '/users/:id',
     name: 'user',
-    component: () => import('../views/User.vue')
+    component: () => import('../views/User.vue'),
+    redirect: (to) => {
+      return { name: 'user-tweets', params: { id: to.params.id } }
+    },
+    children: [
+      {
+        path: 'tweets',
+        name: 'user-tweets',
+        component: () => import('../components/UserTweets.vue')
+      },
+
+      {
+        path: 'replies',
+        name: 'user-replies',
+        component: () => import('../components/UserReplies.vue')
+      },
+
+      {
+        path: 'likes',
+        name: 'user-likes',
+        component: () => import('../components/UserLikes.vue')
+      }
+    ]
   },
   {
     path: '/admin/signin',

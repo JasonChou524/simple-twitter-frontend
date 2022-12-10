@@ -13,18 +13,26 @@
               </svg>
             </a>
             <div class="title">
-              <h6>John Doe</h6>
-              <p>25 推文</p>
+              <h6>{{ user.name }}</h6>
+              <p>{{ user.tweetsCount }} 推文</p>
             </div>
           </nav>
           <div class="img-wrap">
             <img
+              v-if="user.frontCover"
+              class="front-cover"
+              :src="user.frontCover"
+              alt=""
+            />
+            <img
+              v-else
               class="front-cover"
               src="~@/assets/image/front-cover.png"
               alt=""
             />
             <div class="avatar">
-              <img src="~@/assets/image/tweet-default.png" alt="" />
+              <img v-if="user.avatar" :src="user.avatar" alt="" />
+              <img v-else src="~@/assets/image/tweet-default.png" alt="" />
             </div>
           </div>
           <div class="user-card">
@@ -32,15 +40,14 @@
               <button>編輯個人資料</button>
             </div>
             <div class="card-body">
-              <h6>John Doe</h6>
-              <p class="account">@heyjohn</p>
+              <h6>{{ user.name }}</h6>
+              <p class="account">@{{ user.account }}</p>
               <p>
-                Amet minim mollit non deserunt ullamco est sit aliqua dolor do
-                amet sint.
+                {{ user.introduction }}
               </p>
               <div class="follow-info">
-                <a href="">34 個<span>跟隨中</span></a>
-                <a href="">59 位<span>跟隨者</span></a>
+                <a href="">{{ user.followingsCount }} 個<span>跟隨中</span></a>
+                <a href="">{{ user.Followers.length }} 位<span>跟隨者</span></a>
               </div>
             </div>
           </div>
@@ -51,6 +58,7 @@
               <li><a href="">喜歡的內容</a></li>
             </ul>
           </nav>
+          <router-view :user="user" />
         </div>
       </section>
       <user-popular class="col-3" />
@@ -62,10 +70,79 @@
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
 
+import { mapState } from 'vuex'
+import usersAPI from '@/apis/users'
+import { Toast } from './../utils/helpers'
+
 export default {
   components: {
     NavTabs,
     UserPopular
+  },
+  data() {
+    return {
+      user: {
+        id: -1,
+        name: '',
+        tweetsCount: 0,
+        account: '',
+        introduction: '',
+        front_cover: '',
+        avatar: '',
+        followingsCount: '',
+        Followers: '',
+        isFollowed: false
+      }
+    }
+  },
+  computed: {
+    ...mapState(['currentUser'])
+  },
+  created() {
+    const { id } = this.$route.params
+    this.fetchUser(id)
+  },
+  beforeRouteUpdate(to, from, next) {
+    const userId = to.params.id
+    this.fetchUser(userId)
+    next()
+  },
+  methods: {
+    async fetchUser(userId) {
+      try {
+        const { data } = await usersAPI.getUser({ id: userId })
+        const {
+          id,
+          name,
+          tweetsCount,
+          account,
+          introduction,
+          avatar,
+          followingsCount,
+          Followers,
+          isFollowed
+        } = data
+        const frontCover = data.front_cover
+        this.user = {
+          id,
+          name,
+          tweetsCount,
+          account,
+          introduction,
+          frontCover,
+          avatar,
+          followingsCount,
+          Followers,
+          isFollowed
+        }
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得個人資料，請稍後再試'
+        })
+        this.$router.push('/')
+      }
+    }
   }
 }
 </script>
@@ -102,6 +179,7 @@ export default {
     backdrop-filter: blur(3px);
     font-weight: 700;
     position: sticky;
+    z-index: 5;
     top: 0;
     svg {
       width: 24px;
@@ -120,9 +198,11 @@ export default {
   .img-wrap {
     width: 100%;
     position: relative;
+    z-index: 0;
     .front-cover {
       width: 100%;
       height: 200px;
+      object-fit: cover;
     }
     .avatar {
       width: 140px;
@@ -132,9 +212,11 @@ export default {
       position: absolute;
       bottom: -70px;
       left: 16px;
+      object-fit: cover;
       img {
         width: 100%;
         height: 100%;
+        border-radius: 100px;
       }
     }
   }
