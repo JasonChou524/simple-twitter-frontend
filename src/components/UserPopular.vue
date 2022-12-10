@@ -380,6 +380,7 @@ export default {
   },
   methods: {
     fetchUsers() {
+      // TODO: API /users limit=10
       this.users = dummyUsers.map((user) => ({
         id: user.id,
         name: user.name,
