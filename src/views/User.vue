@@ -53,9 +53,33 @@
           </div>
           <nav class="navtabs">
             <ul>
-              <li class="active"><a href="">推文</a></li>
-              <li><a href="">回覆</a></li>
-              <li><a href="">喜歡的內容</a></li>
+              <li active-class="active">
+                <router-link
+                  class="nav-link"
+                  :to="{
+                    name: 'user-tweets',
+                    params: { id: $route.params.id }
+                  }"
+                  >推文</router-link
+                >
+              </li>
+              <li active-class="active">
+                <router-link
+                  class="nav-link"
+                  :to="{
+                    name: 'user-replies',
+                    params: { id: $route.params.id }
+                  }"
+                  >回覆</router-link
+                >
+              </li>
+              <li active-class="active">
+                <router-link
+                  class="nav-link"
+                  :to="{ name: 'user-likes', params: { id: $route.params.id } }"
+                  >喜歡的內容</router-link
+                >
+              </li>
             </ul>
           </nav>
           <router-view :user="user" />
@@ -259,7 +283,7 @@ export default {
     }
   }
   .navtabs {
-    a {
+    .nav-link {
       color: $gray4;
       font-size: 15px;
       font-weight: 700;
@@ -274,11 +298,11 @@ export default {
       width: 130px;
       padding: 15px 0;
       text-align: center;
-      &.active {
-        a {
-          color: $brand-color;
-        }
+      &:has(.router-link-active) {
         border-bottom: 2px solid $brand-color;
+      }
+      .router-link-active {
+        color: $brand-color;
       }
     }
   }
