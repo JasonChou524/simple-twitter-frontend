@@ -46,8 +46,22 @@
                 {{ user.introduction }}
               </p>
               <div class="follow-info">
-                <a href="">{{ user.followingsCount }} 個<span>跟隨中</span></a>
-                <a href="">{{ user.Followers.length }} 位<span>跟隨者</span></a>
+                <router-link
+                  :to="{
+                    name: 'user-following',
+                    params: { id: $route.params.id }
+                  }"
+                  >{{ user.followingsCount }} 個<span>跟隨中</span></router-link
+                >
+                <router-link
+                  :to="{
+                    name: 'user-follower',
+                    params: { id: $route.params.id }
+                  }"
+                  >{{ user.Followers.length }} 位<span
+                    >跟隨者</span
+                  ></router-link
+                >
               </div>
             </div>
           </div>

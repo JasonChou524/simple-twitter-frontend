@@ -26,5 +26,15 @@ export default {
     return apiHelper.get(`/users/${id}/replied_tweets`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
+  },
+  getUserFollowers({ id }) {
+    return apiHelper.get(`/users/${id}/followers`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
+  getUserFollowings({ id }) {
+    return apiHelper.get(`/users/${id}/followings`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
   }
 }
