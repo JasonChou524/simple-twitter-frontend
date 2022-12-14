@@ -1,5 +1,5 @@
 <template>
-  <form action="">
+  <form @submit.prevent.stop="handleSubmit">
     <ul>
       <li class="input-area account">
         <label for="account">帳號</label>
@@ -58,14 +58,25 @@
       </li>
     </ul>
     <div class="btn">
-      <button v-if="user.isEdit" class="edit-btn">儲存</button>
-      <button v-else class="signup-btn">註冊</button>
+      <button
+        v-if="user.isEdit"
+        class="edit-btn"
+        type="submit"
+        :disabled="isProcessing"
+      >
+        儲存
+      </button>
+      <button v-else class="signup-btn" type="submit" :disabled="isProcessing">
+        註冊
+      </button>
     </div>
   </form>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import authorizationAPI from '@/apis/authorization'
+import { Toast } from '@/utils/helpers'
 
 export default {
   data() {
@@ -78,7 +89,8 @@ export default {
         password: '',
         checkPassword: '',
         isEdit: false
-      }
+      },
+      isProcessing: false
     }
   },
   computed: {
@@ -89,13 +101,86 @@ export default {
   },
   methods: {
     fetchUser() {
-      if (this.currentUser.id) {
+      if (this.currentUser.id !== -1) {
         this.user = {
           ...this.currentUser,
           password: '',
           checkPassword: '',
           isEdit: true
         }
+      }
+    },
+    async handleSubmit() {
+      try {
+        if (
+          !this.user.account.trim() ||
+          !this.user.name.trim() ||
+          !this.user.email.trim() ||
+          !this.user.password.trim() ||
+          !this.user.checkPassword.trim()
+        ) {
+          Toast.fire({
+            icon: 'warning',
+            title: '欄位不可為空'
+          })
+          this.isProcessing = false
+          return
+        }
+        if (this.user.name && this.user.name.length > 50) {
+          Toast.fire({
+            icon: 'warning',
+            title: '名稱字數不能超過 50 '
+          })
+          this.isProcessing = false
+          return
+        }
+        if (this.user.password.length < 4) {
+          Toast.fire({
+            icon: 'warning',
+            title: '密碼長度不得小於 4'
+          })
+          this.user.password = ''
+          this.user.checkPassword = ''
+          this.isProcessing = false
+          return
+        }
+        if (this.user.password !== this.user.checkPassword) {
+          Toast.fire({
+            icon: 'warning',
+            title: '兩次輸入的密碼不同'
+          })
+          this.user.password = ''
+          this.user.checkPassword = ''
+          this.isProcessing = false
+          return
+        }
+        this.isProcessing = true
+
+        const { data } = await authorizationAPI.signUp({
+          account: this.user.account,
+          name: this.user.name,
+          email: this.user.email,
+          password: this.user.password,
+          checkPassword: this.user.checkPassword
+        })
+
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '帳號註冊成功'
+        })
+
+        this.$router.push('/signin')
+      } catch (error) {
+        // TODO: 表單錯誤驗證（顯示在 input 下）
+        Toast.fire({
+          icon: 'error',
+          title: `${error.response.data.message}`
+        })
+        this.isProcessing = false
       }
     }
   }
@@ -149,9 +234,9 @@ export default {
     font-size: 20px;
     font-weight: 400;
     cursor: pointer;
-  }
-  .edit-btn {
-    width: 88px;
+    &.edit-btn {
+      width: 88px;
+    }
   }
 }
 </style>
