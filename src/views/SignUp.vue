@@ -5,7 +5,7 @@
         <img src="~@/assets/image/logo.png" alt="" />
       </div>
       <h3>建立你的帳號</h3>
-      <user-form />
+      <user-form :is-processing="isProcessing" @after-submit="userSignUp" />
       <nav>
         <router-link to="signin" class="nav-link" href="">取消</router-link>
       </nav>
@@ -16,18 +16,92 @@
 <script>
 import UserForm from '@/components/UserForm.vue'
 
-// import { Toast } from '@/utils/helpers'
+import authorizationAPI from '@/apis/authorization'
+import { Toast } from '@/utils/helpers'
 
 export default {
   components: { UserForm },
   data() {
     return {
-      account: '',
-      password: '',
       isProcessing: false
     }
   },
-  methods: {}
+  methods: {
+    async userSignUp(user) {
+      try {
+        console.log('userSignUp', user)
+        if (
+          !user.account.trim() ||
+          !user.name.trim() ||
+          !user.email.trim() ||
+          !user.password.trim() ||
+          !user.checkPassword.trim()
+        ) {
+          Toast.fire({
+            icon: 'warning',
+            title: '欄位不可為空'
+          })
+          this.isProcessing = false
+          return
+        }
+        if (user.name && user.name.length > 50) {
+          Toast.fire({
+            icon: 'warning',
+            title: '名稱字數不能超過 50 '
+          })
+          this.isProcessing = false
+          return
+        }
+        if (user.password.length < 4) {
+          Toast.fire({
+            icon: 'warning',
+            title: '密碼長度不得小於 4'
+          })
+          user.password = ''
+          user.checkPassword = ''
+          this.isProcessing = false
+          return
+        }
+        if (user.password !== user.checkPassword) {
+          Toast.fire({
+            icon: 'warning',
+            title: '兩次輸入的密碼不同'
+          })
+          user.password = ''
+          user.checkPassword = ''
+          this.isProcessing = false
+          return
+        }
+        this.isProcessing = true
+
+        const { data } = await authorizationAPI.signUp({
+          account: user.account,
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          checkPassword: user.checkPassword
+        })
+
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '帳號註冊成功'
+        })
+
+        this.$router.push('/signin')
+      } catch (error) {
+        // TODO: 表單錯誤驗證（顯示在 input 下）
+        Toast.fire({
+          icon: 'error',
+          title: `${error.response.data.message}`
+        })
+        this.isProcessing = false
+      }
+    }
+  }
 }
 </script>
 
