@@ -27,7 +27,7 @@
         <label for="email">Email</label>
         <input
           v-model="user.email"
-          type="text"
+          type="email"
           id="email"
           name="email"
           placeholder="請輸入 Email"
