@@ -42,7 +42,7 @@
           id="password"
           name="password"
           placeholder="請輸入密碼"
-          required
+          :required="!user.isEdit"
         />
       </li>
       <li class="input-area checkPassword">
@@ -53,7 +53,7 @@
           id="checkPassword"
           name="checkPassword"
           placeholder="請再次輸入密碼"
-          required
+          :required="!user.isEdit"
         />
       </li>
     </ul>

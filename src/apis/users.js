@@ -36,5 +36,10 @@ export default {
     return apiHelper.get(`/users/${id}/followings`, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
+  },
+  userEdit({ id, editData }) {
+    return apiHelper.put(`/users/${id}`, editData, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
   }
 }
