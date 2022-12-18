@@ -61,7 +61,7 @@
             >
             </textarea>
             <div class="reply-btn">
-              <button :disabled="isBtnDisabled" @click.stop="handleClick">
+              <button :disabled="isBtnDisabled" @click.stop="createReply">
                 回覆
               </button>
               <span :class="{ 'error-message': isBtnDisabled }">
@@ -80,7 +80,8 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
-import { dayjs } from '@/utils/helpers'
+import { Toast } from '@/utils/helpers'
+import tweetsAPI from '@/apis/tweets'
 
 export default {
   data() {
@@ -107,31 +108,44 @@ export default {
       this.isBtnDisabled = false
       this.textOverflow = false
     },
-    handleClick() {
-      // TODO: API POST /tweets/:id/replies
-      // "id": 156,
-      //   "comment": "我是一號君的留言小小一號君",
-      //   "createdAt": "2022-12-07T04:00:52.000Z",
-      //   "updatedAt": "2022-12-07T04:00:52.000Z",
-      //   "User": {
-      //       "id": 2,
-      //       "account": "user1",
-      //       "name": "user1",
-      //       "avatar": "https://randomuser.me/api/portraits/women/1.jpg"
-      //   }
-      this.$emit('afterCreateReply', {
-        id: dayjs().valueOf(),
-        comment: this.text,
-        User: {
-          id: this.currentUser.id,
-          account: this.currentUser.account,
-          name: this.currentUser.name,
-          avatar: this.currentUser.avatar
-        },
-        TweetId: this.tweet.id,
-        updatedAt: dayjs().toISOString(),
-        createdAt: dayjs().toISOString()
-      })
+    async createReply() {
+      try {
+        // TODO: API POST /tweets/:id/replies
+        const { data } = await tweetsAPI.createReply({
+          id: this.tweet.id,
+          comment: this.text
+        })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        const reply = { ...data.data }
+
+        Toast.fire({
+          icon: 'success',
+          title: '回覆成功'
+        })
+
+        this.$emit('afterCreateReply', {
+          id: reply.id,
+          comment: reply.comment,
+          User: {
+            id: this.currentUser.id,
+            account: this.currentUser.account,
+            name: this.currentUser.name,
+            avatar: this.currentUser.avatar
+          },
+          TweetId: reply.TweetId,
+          updatedAt: reply.updatedAt,
+          createdAt: reply.createdAt
+        })
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '回覆失敗，請稍候再試'
+        })
+      }
     }
   }
 }

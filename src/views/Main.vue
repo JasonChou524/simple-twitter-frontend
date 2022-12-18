@@ -92,7 +92,7 @@ export default {
           return {
             ...tweet,
             isLiked: true,
-            likeCount: tweet.likeCount + 1
+            LikesCount: tweet.LikesCount + 1
           }
         }
         return tweet
@@ -104,7 +104,7 @@ export default {
           return {
             ...tweet,
             isLiked: false,
-            likeCount: tweet.likeCount - 1
+            LikesCount: tweet.LikesCount - 1
           }
         }
         return tweet
@@ -125,7 +125,7 @@ export default {
         if (tweet.id === newReply.TweetId) {
           return {
             ...tweet,
-            repliesCount: tweet.repliesCount + 1
+            RepliesCount: tweet.RepliesCount + 1
           }
         }
         return tweet
