@@ -55,7 +55,8 @@
 </template>
 
 <script>
-import { dayjs } from '@/utils/helpers'
+import { dayjs, Toast } from '@/utils/helpers'
+import tweetsAPI from '@/apis/tweets'
 
 export default {
   props: {
@@ -70,15 +71,50 @@ export default {
     }
   },
   methods: {
-    addLike(id) {
-      // TODO: API add like
-      // 發送事件給父層
-      this.$emit('afterAddLike', id)
+    async addLike(id) {
+      try {
+        // TODO: API add like
+        const { data } = await tweetsAPI.addLike({ id })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '喜歡推文成功'
+        })
+
+        // 發送事件給父層
+        this.$emit('afterAddLike', id)
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法喜歡推文，請稍候再試'
+        })
+      }
     },
-    removeLike(id) {
-      // TODO: API remove like
-      // 發送事件給父層
-      this.$emit('afterRemoveLike', id)
+    async removeLike(id) {
+      try {
+        // TODO: API remove like
+        const { data } = await tweetsAPI.removeLike({ id })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '移除喜歡推文成功'
+        })
+        // 發送事件給父層
+        this.$emit('afterRemoveLike', id)
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法移除喜歡推文，請稍候再試'
+        })
+      }
     },
     handleReply(tweet) {
       this.$store.commit('getTweet', {
