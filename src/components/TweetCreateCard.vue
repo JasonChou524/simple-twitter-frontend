@@ -1,9 +1,13 @@
 <template>
   <div class="create-tweet-card">
     <div class="card-body">
-      <a class="avatar">
-        <img src="~@/assets/image/tweet-default.png" alt="" />
-      </a>
+      <router-link
+        :to="{ name: 'user', params: { id: currentUser.id } }"
+        class="avatar"
+      >
+        <img v-if="currentUser.avatar" :src="currentUser.avatar" alt="" />
+        <img v-else src="~@/assets/image/tweet-default.png" alt="" />
+      </router-link>
       <textarea
         v-model="text"
         class="text"
@@ -27,17 +31,9 @@
 </template>
 
 <script>
-import { dayjs } from '@/utils/helpers'
-
-const dummyUser = {
-  id: 5,
-  account: 'user4',
-  name: 'user4',
-  avatar: null,
-  introduction: 'Et voluptates alias eligendi perspiciatis.',
-  role: 'user',
-  front_cover: null
-}
+import { Toast } from '@/utils/helpers'
+import { mapState } from 'vuex'
+import tweetsAPI from '@/apis/tweets'
 
 export default {
   data() {
@@ -48,30 +44,50 @@ export default {
     }
   },
   computed: {
+    ...mapState(['currentUser']),
     textLength() {
       return this.text.length
     }
   },
   methods: {
-    handleButtonClick() {
-      // TODO: API POST tweets
-      // 暫時建立的 dummyTweet
-      const newTweet = {
-        id: dayjs().valueOf(),
-        description: this.text,
-        createdAt: dayjs().toISOString(),
-        User: dummyUser,
-        isLiked: false,
-        likeCount: 0,
-        replyCount: 0
+    async handleButtonClick() {
+      try {
+        const { data } = await tweetsAPI.createTweet({ description: this.text })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '成功建立推文'
+        })
+
+        const { tweet } = data
+
+        const newTweet = {
+          id: tweet.id,
+          description: tweet.description,
+          createdAt: tweet.createdAt,
+          User: this.currentUser,
+          isLiked: false,
+          LikesCount: 0,
+          RepliesCount: 0
+        }
+        this.$emit('afterCreateTweet', newTweet)
+        this.text = ''
+        this.isBtnDisabled = true
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法新增推文，請稍候再試'
+        })
       }
-      this.$emit('afterCreateTweet', newTweet)
-      this.text = ''
-      this.isBtnDisabled = true
     },
     textValidator() {
       if (this.textLength <= 0) {
         this.isBtnDisabled = true
+        this.textOverflow = false
         return
       } else if (this.textLength > 140) {
         this.isBtnDisabled = true
