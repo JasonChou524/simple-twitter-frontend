@@ -7,6 +7,11 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
+  getPopularUsers() {
+    return apiHelper.get('/users?limit=10', {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
   getUser({ id }) {
     return apiHelper.get(`/users/${id}`, {
       headers: { Authorization: `Bearer ${getToken()}` }
