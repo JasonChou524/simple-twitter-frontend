@@ -39,7 +39,7 @@ export default {
   methods: {
     async userEdit(user) {
       try {
-        this.formValidtor(user)
+        this.formValidator(user)
         if (!Object.keys(this.editData).length) {
           return
         }
@@ -70,7 +70,7 @@ export default {
         this.isProcessing = false
       }
     },
-    formValidtor(user) {
+    formValidator(user) {
       // 帳號、姓名、信箱空白檢測
       if (!user.account.trim() || !user.name.trim() || !user.email.trim()) {
         Toast.fire({
