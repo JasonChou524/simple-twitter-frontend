@@ -36,8 +36,20 @@
             </div>
           </div>
           <div class="user-card">
-            <div class="card-header">
+            <div v-if="pageUserId === currentUser.id" class="card-header">
               <button>編輯個人資料</button>
+            </div>
+            <div v-else class="card-header">
+              <button
+                v-if="user.isFollowed"
+                class="unfollow-btn"
+                @click="removeFollow(user.id)"
+              >
+                正在跟隨
+              </button>
+              <button v-else class="follow-btn" @click="addFollow(user.id)">
+                跟隨
+              </button>
             </div>
             <div class="card-body">
               <h6>{{ user.name }}</h6>
@@ -134,7 +146,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentUser'])
+    ...mapState(['currentUser']),
+    pageUserId() {
+      return Number(this.$route.params.id)
+    }
   },
   created() {
     const { id } = this.$route.params
@@ -179,6 +194,48 @@ export default {
           title: '無法取得個人資料，請稍後再試'
         })
         this.$router.push('/')
+      }
+    },
+    async addFollow(id) {
+      try {
+        const { data } = await usersAPI.addFollow({ id })
+
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '追隨成功'
+        })
+
+        this.user.isFollowed = true
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '追隨失敗，請稍候再試'
+        })
+      }
+    },
+    async removeFollow(id) {
+      try {
+        const { data } = await usersAPI.removeFollow({ id })
+
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '移除追隨成功'
+        })
+
+        this.user.isFollowed = false
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '移除追隨失敗，請稍候再試'
+        })
       }
     }
   }
@@ -270,6 +327,15 @@ export default {
       color: $brand-color;
       font-size: 16px;
       cursor: pointer;
+      &.unfollow-btn {
+        background-color: $brand-color;
+        color: #fff;
+      }
+      &.follow-btn {
+        border: 1px solid $brand-color;
+        background-color: #fff;
+        color: $brand-color;
+      }
     }
   }
   .card-body {

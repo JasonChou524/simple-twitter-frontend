@@ -41,5 +41,19 @@ export default {
     return apiHelper.put(`/users/${id}`, editData, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
+  },
+  addFollow({ id }) {
+    return apiHelper.post(
+      '/followships',
+      { id },
+      {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      }
+    )
+  },
+  removeFollow({ id }) {
+    return apiHelper.delete(`/followships/${id}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
   }
 }
