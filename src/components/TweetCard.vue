@@ -1,16 +1,25 @@
 <template>
   <div class="tweet-card">
-    <a href="" class="avatar">
-      <img src="~@/assets/image/tweet-default.png" alt="" />
-    </a>
+    <router-link
+      :to="{ name: 'user', params: { id: tweet.User.id } }"
+      class="avatar"
+    >
+      <img v-if="tweet.User.avatar" :src="tweet.User.avatar" alt="" />
+      <img v-else src="~@/assets/image/tweet-default.png" alt="" />
+    </router-link>
     <div class="card-body">
       <h6 class="card-title">
-        {{ tweet.User.name }}
+        <router-link :to="{ name: 'user', params: { id: tweet.User.id } }">
+          {{ tweet.User.name }}
+        </router-link>
         <span>@{{ tweet.User.account }}．{{ createdFromNow }}</span>
       </h6>
-      <p class="card-content">
+      <router-link
+        :to="{ name: 'tweet', params: { id: tweet.id } }"
+        class="card-content"
+      >
         {{ tweet.description }}
-      </p>
+      </router-link>
       <div class="tweet-info">
         <div class="btn reply-btn" @click="handleReply(tweet)">
           <svg width="30" height="30" viewBox="0 0 30 30">
@@ -94,6 +103,7 @@ export default {
   img {
     width: 50px;
     height: 50px;
+    border-radius: 50px;
   }
 }
 .card-body {
@@ -103,6 +113,9 @@ export default {
   h6 {
     font-size: 16px;
     font-weight: 700;
+    a {
+      color: $black;
+    }
     span {
       margin-left: 8px;
       font-size: 14px;
@@ -119,6 +132,7 @@ export default {
   }
 }
 .tweet-info {
+  margin-top: 10px;
   display: flex;
   .btn {
     display: flex;
