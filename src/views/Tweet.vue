@@ -5,7 +5,7 @@
       <section class="col-6">
         <div class="tweet">
           <div class="title">
-            <a href="#">
+            <a @click="$router.go(-1)">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path
                   d="M20 10.9999H7.41399L11.707 6.70687C12.097 6.31687 12.097 5.68388 11.707 5.29288C11.317 4.90188 10.684 4.90288 10.293 5.29288L4.29299 11.2929C3.90299 11.6829 3.90299 12.3159 4.29299 12.7069L10.293 18.7069C10.488 18.9019 10.743 18.9999 11 18.9999C11.257 18.9999 11.512 18.9019 11.707 18.7069C12.097 18.3169 12.097 17.6839 11.707 17.2929L7.41399 12.9999H20C20.553 12.9999 21 12.5529 21 11.9999C21 11.4469 20.553 10.9999 20 10.9999Z"
@@ -16,13 +16,20 @@
           </div>
           <div class="tweet-detail">
             <div class="header">
-              <div class="avatar">
-                <img src="~@/assets/image/tweet-default.png" alt="" />
-              </div>
-              <div class="user-info">
+              <router-link
+                :to="{ name: 'user', params: { id: tweet.User.id } }"
+                class="avatar"
+              >
+                <img v-if="tweet.User.avatar" :src="tweet.User.avatar" alt="" />
+                <img v-else src="~@/assets/image/tweet-default.png" alt="" />
+              </router-link>
+              <router-link
+                :to="{ name: 'user', params: { id: tweet.User.id } }"
+                class="user-info"
+              >
                 <h6>{{ tweet.User.name }}</h6>
                 <p>@{{ tweet.User.account }}</p>
-              </div>
+              </router-link>
             </div>
             <p class="description">
               {{ tweet.description }}
@@ -148,6 +155,9 @@ export default {
     font-weight: 700;
     position: sticky;
     top: 0;
+    a {
+      cursor: pointer;
+    }
     svg {
       width: 24px;
       height: 24px;
@@ -171,6 +181,7 @@ export default {
   img {
     width: 50px;
     height: 50px;
+    border-radius: 50px;
   }
   .user-info {
     display: flex;

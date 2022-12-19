@@ -1,15 +1,22 @@
 <template>
   <div class="reply-card">
-    <div class="avatar">
+    <router-link
+      :to="{ name: 'user', params: { id: reply.User.id } }"
+      class="avatar"
+    >
       <img v-if="reply.User.avatar" :src="reply.User.avatar" alt="" />
       <img v-else src="~@/assets/image/tweet-default.png" alt="" />
-    </div>
+    </router-link>
     <div class="card-info">
       <div class="title">
-        <h6 class="reply-author">
+        <router-link
+          :to="{ name: 'user', params: { id: reply.User.id } }"
+          class="reply-author"
+          tag="h6"
+        >
           {{ reply.User.name }}
           <span>@{{ reply.User.account }}・{{ createdFromNow }}</span>
-        </h6>
+        </router-link>
         <p class="reqly-target">
           回覆 <span>@{{ tweetAccount }}</span>
         </p>
@@ -64,6 +71,7 @@ export default {
     font-size: 16px;
     font-weight: 700;
     line-height: 26px;
+    cursor: pointer;
     span {
       color: $Secondary;
       font-size: 14px;
