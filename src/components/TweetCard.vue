@@ -73,7 +73,6 @@ export default {
   methods: {
     async addLike(id) {
       try {
-        // TODO: API add like
         const { data } = await tweetsAPI.addLike({ id })
 
         if (data.status === 'error') {
@@ -96,7 +95,6 @@ export default {
     },
     async removeLike(id) {
       try {
-        // TODO: API remove like
         const { data } = await tweetsAPI.removeLike({ id })
 
         if (data.status === 'error') {
