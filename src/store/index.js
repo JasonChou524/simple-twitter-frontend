@@ -2,96 +2,10 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import usersAPI from '@/apis/users'
-// import { Toast } from '@/utils/helpers'
+import tweetsAPI from '@/apis/tweets'
+import { Toast } from '@/utils/helpers'
 
 Vue.use(Vuex)
-
-const dummyTweet = {
-  id: 1,
-  UserId: 2,
-  description: 'laboriosam qui eveniet',
-  createdAt: '2022-12-05T19:02:36.000Z',
-  updatedAt: '2022-12-06T13:04:20.000Z',
-  User: {
-    id: 2,
-    account: 'user1',
-    name: 'user1',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
-    introduction: 'minus hic enim',
-    role: 'user',
-    front_cover: 'https://picsum.photos/400/300?random=1'
-  },
-  Replies: [
-    {
-      id: 6
-    },
-    {
-      id: 7
-    },
-    {
-      id: 8
-    },
-    {
-      id: 156
-    }
-  ],
-  Likes: [],
-  replyCount: 4,
-  likeCount: 0,
-  isLiked: false
-}
-const dummyReplies = [
-  {
-    id: 156,
-    comment: '我是一號君的留言小小一號君',
-    createdAt: '2022-12-07T04:00:52.000Z',
-    updatedAt: '2022-12-07T04:00:52.000Z',
-    User: {
-      id: 2,
-      account: 'user1',
-      name: 'user1',
-      avatar: 'https://randomuser.me/api/portraits/women/1.jpg'
-    }
-  },
-  {
-    id: 7,
-    comment:
-      'Voluptatem officiis quia. Non veniam quisquam necessitatibus dignissimos et et est. Maiores unde mol',
-    createdAt: '2022-12-06T13:02:59.000Z',
-    updatedAt: '2022-12-06T13:04:20.000Z',
-    User: {
-      id: 6,
-      account: 'user5',
-      name: 'user5',
-      avatar: 'https://randomuser.me/api/portraits/women/5.jpg'
-    }
-  },
-  {
-    id: 6,
-    comment: 'Vel totam vero.',
-    createdAt: '2022-12-05T19:07:58.000Z',
-    updatedAt: '2022-12-06T13:04:20.000Z',
-    User: {
-      id: 4,
-      account: 'user3',
-      name: 'user3',
-      avatar: 'https://randomuser.me/api/portraits/women/3.jpg'
-    }
-  },
-  {
-    id: 8,
-    comment:
-      'Voluptas nemo sint dolores in modi tempore.\nSit iure quia delectus unde.\nQuasi ut quod accusamus ape',
-    createdAt: '2022-12-05T17:49:29.000Z',
-    updatedAt: '2022-12-06T13:04:20.000Z',
-    User: {
-      id: 6,
-      account: 'user5',
-      name: 'user5',
-      avatar: 'https://randomuser.me/api/portraits/women/5.jpg'
-    }
-  }
-]
 
 export default new Vuex.Store({
   state() {
@@ -153,7 +67,6 @@ export default new Vuex.Store({
       state.tweet.replyCount = state.tweet.replyCount + 1
     },
     addLike(state) {
-      // TODO: 改變 tweets
       state.tweet = {
         ...state.tweet,
         likeCount: state.tweet.likeCount + 1,
@@ -161,7 +74,6 @@ export default new Vuex.Store({
       }
     },
     removeLike(state) {
-      // TODO: 改變 tweets
       state.tweet = {
         ...state.tweet,
         likeCount: state.tweet.likeCount - 1,
@@ -181,47 +93,83 @@ export default new Vuex.Store({
         return false
       }
     },
-    fetchTweet({ commit }, tweetId) {
-      console.log(`API /tweets/${tweetId}`)
-      console.log(`API /tweets/${tweetId}/replies`)
-      // TODO: API /tweets/:id
-      // TODO: API /tweets/:id/replies
-      const {
-        id,
-        UserId,
-        description,
-        createdAt,
-        updatedAt,
-        User,
-        Likes,
-        replyCount,
-        likeCount,
-        isLiked
-      } = dummyTweet
-      const Replies = [...dummyReplies]
-      commit('getTweet', {
-        id,
-        UserId,
-        description,
-        createdAt,
-        updatedAt,
-        User,
-        Likes,
-        replyCount,
-        likeCount,
-        isLiked,
-        Replies
-      })
+    async fetchTweet({ commit }, tweetId) {
+      try {
+        const tweetResponse = await tweetsAPI.getTweet({ id: tweetId })
+        const repliesResponse = await tweetsAPI.getReplies({ id: tweetId })
+        const {
+          id,
+          UserId,
+          description,
+          createdAt,
+          updatedAt,
+          User,
+          Likes,
+          replyCount,
+          likeCount,
+          isLiked
+        } = tweetResponse.data
+        const Replies = [...repliesResponse.data]
+        commit('getTweet', {
+          id,
+          UserId,
+          description,
+          createdAt,
+          updatedAt,
+          User,
+          Likes,
+          replyCount,
+          likeCount,
+          isLiked,
+          Replies
+        })
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得推文資訊，請稍候再試'
+        })
+      }
     },
-    fetchAddLike({ commit }, tweetId) {
-      // TODO: API POST /api/tweets/:id/like
-      console.log('fetchAddLike', tweetId)
-      commit('addLike', tweetId)
+    async fetchAddLike({ commit }, tweetId) {
+      try {
+        const { data } = await tweetsAPI.addLike({ id: tweetId })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '喜歡推文成功'
+        })
+        commit('addLike', tweetId)
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法喜歡推文，請稍候再試'
+        })
+      }
     },
-    fetchRemoveLike({ commit }, tweetId) {
-      // TODO: API POST /api/tweets/:id/like
-      console.log('fetchRemoveLike', tweetId)
-      commit('removeLike', tweetId)
+    async fetchRemoveLike({ commit }, tweetId) {
+      try {
+        const { data } = await tweetsAPI.removeLike({ id: tweetId })
+
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+
+        Toast.fire({
+          icon: 'success',
+          title: '移除喜歡推文成功'
+        })
+
+        commit('removeLike', tweetId)
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法移除喜歡推文，請稍候再試'
+        })
+      }
     }
   },
   modules: {}

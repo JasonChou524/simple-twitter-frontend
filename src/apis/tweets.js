@@ -7,6 +7,11 @@ export default {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
   },
+  getTweet({ id }) {
+    return apiHelper.get(`/tweets/${id}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
   createTweet({ description }) {
     return apiHelper.post(
       '/tweets',
@@ -33,6 +38,11 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` }
       }
     )
+  },
+  getReplies({ id }) {
+    return apiHelper.get(`/tweets/${id}/replies`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
   },
   createReply({ id, comment }) {
     return apiHelper.post(

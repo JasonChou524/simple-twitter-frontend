@@ -91,8 +91,6 @@ import TweetReplyModal from '../components/TweetReplyModal.vue'
 import { mapState, mapMutations, mapActions } from 'vuex'
 import { dayjs } from '@/utils/helpers'
 
-const dummyTweetId = 1 // TODO: 要用 route 取值
-
 export default {
   components: {
     NavTabs,
@@ -110,7 +108,8 @@ export default {
     }
   },
   created() {
-    this.fetchTweet(dummyTweetId)
+    const TweetId = this.$route.params.id
+    this.fetchTweet(TweetId)
   },
   methods: {
     ...mapMutations(['openReplyModal', 'closeReplyModal', 'createReply']),
