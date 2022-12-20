@@ -110,7 +110,6 @@ export default {
     },
     async createReply() {
       try {
-        // TODO: API POST /tweets/:id/replies
         const { data } = await tweetsAPI.createReply({
           id: this.tweet.id,
           comment: this.text
