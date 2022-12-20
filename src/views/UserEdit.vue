@@ -1,7 +1,7 @@
 <template>
   <div class="edit-container">
     <div class="row">
-      <nav-tabs class="col-3" />
+      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
       <section class="col-6">
         <div class="edit">
           <div class="title">
@@ -11,12 +11,18 @@
         </div>
       </section>
     </div>
+    <tweet-create-modal
+      v-if="isCreateModalShow"
+      @clickCloseBtn="closeCreateModal"
+      @afterCreateTweet="closeCreateModal"
+    />
   </div>
 </template>
 
 <script>
 import NavTabs from '@/components/NavTabs.vue'
 import UserForm from '@/components/UserForm.vue'
+import TweetCreateModal from '@/components/TweetCreateModal.vue'
 
 import { mapState } from 'vuex'
 import { Toast } from '@/utils/helpers'
@@ -25,12 +31,14 @@ import usersAPI from '@/apis/users'
 export default {
   components: {
     NavTabs,
-    UserForm
+    UserForm,
+    TweetCreateModal
   },
   data() {
     return {
       editData: {},
-      isProcessing: false
+      isProcessing: false,
+      isCreateModalShow: false
     }
   },
   computed: {
@@ -105,6 +113,12 @@ export default {
       if (this.currentUser.email !== user.email) {
         this.editData.email = user.email
       }
+    },
+    openCreateModal() {
+      this.isCreateModalShow = true
+    },
+    closeCreateModal() {
+      this.isCreateModalShow = false
     }
   }
 }

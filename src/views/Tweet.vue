@@ -1,7 +1,7 @@
 <template>
   <div class="tweet-container">
     <div class="row">
-      <nav-tabs class="col-3" />
+      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
       <section class="col-6">
         <div class="tweet">
           <div class="title">
@@ -82,6 +82,11 @@
       </section>
       <user-popular class="col-3" />
     </div>
+    <tweet-create-modal
+      v-if="isCreateModalShow"
+      @clickCloseBtn="closeCreateModal"
+      @afterCreateTweet="closeCreateModal"
+    />
     <tweet-reply-modal
       v-if="isReplyModalOpen"
       @afterCreateReply="afterCreateReply"
@@ -93,6 +98,7 @@
 import NavTabs from '../components/NavTabs.vue'
 import UserPopular from '../components/UserPopular.vue'
 import ReplyCard from '../components/ReplyCard.vue'
+import TweetCreateModal from '@/components/TweetCreateModal.vue'
 import TweetReplyModal from '../components/TweetReplyModal.vue'
 
 import { mapState, mapMutations, mapActions } from 'vuex'
@@ -103,7 +109,13 @@ export default {
     NavTabs,
     UserPopular,
     ReplyCard,
+    TweetCreateModal,
     TweetReplyModal
+  },
+  data() {
+    return {
+      isCreateModalShow: false
+    }
   },
   computed: {
     ...mapState(['tweet', 'isReplyModalOpen']),
@@ -121,6 +133,12 @@ export default {
   methods: {
     ...mapMutations(['openReplyModal', 'closeReplyModal', 'createReply']),
     ...mapActions(['fetchTweet', 'fetchAddLike', 'fetchRemoveLike']),
+    openCreateModal() {
+      this.isCreateModalShow = true
+    },
+    closeCreateModal() {
+      this.isCreateModalShow = false
+    },
     afterCreateReply(newReply) {
       this.createReply(newReply)
       this.closeReplyModal()
