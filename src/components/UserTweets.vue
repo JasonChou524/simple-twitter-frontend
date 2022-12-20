@@ -18,7 +18,7 @@ import { Toast } from '@/utils/helpers'
 
 export default {
   components: { TweetCard },
-  props: ['user', 'reply'],
+  props: ['user', 'reply', 'newTweet'],
   data() {
     return {
       tweets: []
@@ -30,6 +30,9 @@ export default {
     },
     reply() {
       this.afterCreateReply()
+    },
+    newTweet() {
+      this.afterCreateTweet()
     }
   },
   methods: {
@@ -70,6 +73,9 @@ export default {
         }
         return tweet
       })
+    },
+    afterCreateTweet() {
+      this.tweets.unshift(this.newTweet)
     },
     afterCreateReply() {
       this.tweets = this.tweets.map((tweet) => {

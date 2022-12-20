@@ -1,7 +1,7 @@
 <template>
   <div class="user-container">
     <div class="row">
-      <nav-tabs class="col-3" />
+      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
       <section class="col-6">
         <div class="user">
           <nav class="header">
@@ -111,11 +111,16 @@
               </li>
             </ul>
           </nav>
-          <router-view :user="user" :reply="reply" />
+          <router-view :user="user" :newTweet="newTweet" :reply="reply" />
         </div>
       </section>
       <user-popular class="col-3" />
     </div>
+    <tweet-create-modal
+      v-if="isCreateModalShow"
+      @afterCreateTweet="afterCreateTweet"
+      @clickCloseBtn="closeCreateModal"
+    />
     <tweet-reply-modal
       v-if="isReplyModalOpen"
       @afterCreateReply="afterCreateReply"
@@ -126,6 +131,7 @@
 <script>
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
+import TweetCreateModal from '@/components/TweetCreateModal.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
 
 import { mapState, mapMutations } from 'vuex'
@@ -136,10 +142,12 @@ export default {
   components: {
     NavTabs,
     UserPopular,
+    TweetCreateModal,
     TweetReplyModal
   },
   data() {
     return {
+      isCreateModalShow: false,
       user: {
         id: -1,
         name: '',
@@ -152,7 +160,8 @@ export default {
         Followers: '',
         isFollowed: false
       },
-      reply: {}
+      reply: {},
+      newTweet: {}
     }
   },
   computed: {
@@ -249,6 +258,16 @@ export default {
         })
       }
     },
+    afterCreateTweet(newTweet) {
+      this.newTweet = { ...newTweet }
+      this.isCreateModalShow = false
+    },
+    openCreateModal() {
+      this.isCreateModalShow = true
+    },
+    closeCreateModal() {
+      this.isCreateModalShow = false
+    },
     afterCreateReply(newReply) {
       this.reply = { ...newReply }
       this.createReply(newReply)
@@ -259,6 +278,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.modal-background {
+  z-index: 10;
+}
 .user-container {
   width: 100vw;
   height: 100vh;
