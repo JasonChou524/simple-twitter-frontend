@@ -5,7 +5,7 @@
       <section class="col-6">
         <div class="user-following">
           <nav class="header">
-            <a href="">
+            <a @click="$router.go(-1)">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path
                   d="M20 10.9999H7.41399L11.707 6.70687C12.097 6.31687 12.097 5.68388 11.707 5.29288C11.317 4.90188 10.684 4.90288 10.293 5.29288L4.29299 11.2929C3.90299 11.6829 3.90299 12.3159 4.29299 12.7069L10.293 18.7069C10.488 18.9019 10.743 18.9999 11 18.9999C11.257 18.9999 11.512 18.9019 11.707 18.7069C12.097 18.3169 12.097 17.6839 11.707 17.2929L7.41399 12.9999H20C20.553 12.9999 21 12.5529 21 11.9999C21 11.4469 20.553 10.9999 20 10.9999Z"
@@ -13,8 +13,8 @@
               </svg>
             </a>
             <div class="title">
-              <h6>John Doe</h6>
-              <p>25 推文</p>
+              <h6>{{ user.name }}</h6>
+              <p>{{ user.tweetsCount }} 推文</p>
             </div>
           </nav>
           <nav class="navtabs">
@@ -26,6 +26,7 @@
                     name: 'user-follower',
                     params: { id: $route.params.id }
                   }"
+                  replace
                   >追隨者</router-link
                 >
               </li>
@@ -36,6 +37,7 @@
                     name: 'user-following',
                     params: { id: $route.params.id }
                   }"
+                  replace
                   >正在追隨</router-link
                 >
               </li>
@@ -45,6 +47,8 @@
             v-for="userFollower in userFollowers"
             :key="userFollower.id"
             :user-follow="userFollower"
+            @afterAddFollow="afterAddFollow"
+            @afterRemoveFollow="afterRemoveFollow"
           />
         </div>
       </section>
@@ -69,14 +73,35 @@ export default {
   },
   data() {
     return {
+      user: {},
       userFollowers: []
     }
   },
   created() {
     const { id } = this.$route.params
+    this.fetchUser(id)
     this.fetchUserFollower(id)
   },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params
+    this.fetchUser(id)
+    this.fetchUserFollower(id)
+    next()
+  },
   methods: {
+    async fetchUser(id) {
+      try {
+        const { data } = await usersAPI.getUser({ id })
+        const { name, tweetsCount } = data
+        this.user.name = name
+        this.user.tweetsCount = tweetsCount
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得使用者資料，請稍候再試'
+        })
+      }
+    },
     async fetchUserFollower(id) {
       try {
         const { data } = await usersAPI.getUserFollowers({ id })
@@ -93,6 +118,28 @@ export default {
           title: '無法取得追蹤者，請稍候再試'
         })
       }
+    },
+    afterAddFollow(id) {
+      this.userFollowers = this.userFollowers.map((user) => {
+        if (user.id === id) {
+          return {
+            ...user,
+            isFollow: true
+          }
+        }
+        return user
+      })
+    },
+    afterRemoveFollow(id) {
+      this.userFollowers = this.userFollowers.map((user) => {
+        if (user.id === id) {
+          return {
+            ...user,
+            isFollow: false
+          }
+        }
+        return user
+      })
     }
   }
 }
