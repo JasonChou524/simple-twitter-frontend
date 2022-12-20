@@ -1,6 +1,12 @@
 <template>
   <div>
-    <tweet-card v-for="tweet in tweets" :key="tweet.id" :tweet="tweet" />
+    <tweet-card
+      v-for="tweet in tweets"
+      :key="tweet.id"
+      :tweet="tweet"
+      @afterAddLike="afterAddLike"
+      @afterRemoveLike="afterRemoveLike"
+    />
   </div>
 </template>
 
@@ -12,7 +18,7 @@ import { Toast } from '@/utils/helpers'
 
 export default {
   components: { TweetCard },
-  props: ['user'],
+  props: ['user', 'reply'],
   data() {
     return {
       tweets: []
@@ -21,6 +27,9 @@ export default {
   watch: {
     user() {
       this.fetchUserTweets()
+    },
+    reply() {
+      this.afterCreateReply()
     }
   },
   methods: {
@@ -37,6 +46,41 @@ export default {
           title: '無法取得使用者推文，請稍候再試'
         })
       }
+    },
+    afterAddLike(id) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            isLiked: true,
+            LikesCount: tweet.LikesCount + 1
+          }
+        }
+        return tweet
+      })
+    },
+    afterRemoveLike(id) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === id) {
+          return {
+            ...tweet,
+            isLiked: false,
+            LikesCount: tweet.LikesCount - 1
+          }
+        }
+        return tweet
+      })
+    },
+    afterCreateReply() {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === this.reply.TweetId) {
+          return {
+            ...tweet,
+            RepliesCount: tweet.RepliesCount + 1
+          }
+        }
+        return tweet
+      })
     }
   }
 }

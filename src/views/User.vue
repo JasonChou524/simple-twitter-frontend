@@ -5,7 +5,7 @@
       <section class="col-6">
         <div class="user">
           <nav class="header">
-            <a href="">
+            <a @click="$router.go(-1)">
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path
                   d="M20 10.9999H7.41399L11.707 6.70687C12.097 6.31687 12.097 5.68388 11.707 5.29288C11.317 4.90188 10.684 4.90288 10.293 5.29288L4.29299 11.2929C3.90299 11.6829 3.90299 12.3159 4.29299 12.7069L10.293 18.7069C10.488 18.9019 10.743 18.9999 11 18.9999C11.257 18.9999 11.512 18.9019 11.707 18.7069C12.097 18.3169 12.097 17.6839 11.707 17.2929L7.41399 12.9999H20C20.553 12.9999 21 12.5529 21 11.9999C21 11.4469 20.553 10.9999 20 10.9999Z"
@@ -86,6 +86,7 @@
                     name: 'user-tweets',
                     params: { id: $route.params.id }
                   }"
+                  replace
                   >推文</router-link
                 >
               </li>
@@ -96,6 +97,7 @@
                     name: 'user-replies',
                     params: { id: $route.params.id }
                   }"
+                  replace
                   >回覆</router-link
                 >
               </li>
@@ -103,31 +105,38 @@
                 <router-link
                   class="nav-link"
                   :to="{ name: 'user-likes', params: { id: $route.params.id } }"
+                  replace
                   >喜歡的內容</router-link
                 >
               </li>
             </ul>
           </nav>
-          <router-view :user="user" />
+          <router-view :user="user" :reply="reply" />
         </div>
       </section>
       <user-popular class="col-3" />
     </div>
+    <tweet-reply-modal
+      v-if="isReplyModalOpen"
+      @afterCreateReply="afterCreateReply"
+    />
   </div>
 </template>
 
 <script>
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
+import TweetReplyModal from '@/components/TweetReplyModal.vue'
 
-import { mapState } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import usersAPI from '@/apis/users'
 import { Toast } from './../utils/helpers'
 
 export default {
   components: {
     NavTabs,
-    UserPopular
+    UserPopular,
+    TweetReplyModal
   },
   data() {
     return {
@@ -142,11 +151,12 @@ export default {
         followingsCount: '',
         Followers: '',
         isFollowed: false
-      }
+      },
+      reply: {}
     }
   },
   computed: {
-    ...mapState(['currentUser']),
+    ...mapState(['currentUser', 'isReplyModalOpen']),
     pageUserId() {
       return Number(this.$route.params.id)
     }
@@ -161,6 +171,7 @@ export default {
     next()
   },
   methods: {
+    ...mapMutations(['openReplyModal', 'closeReplyModal', 'createReply']),
     async fetchUser(userId) {
       try {
         const { data } = await usersAPI.getUser({ id: userId })
@@ -237,6 +248,11 @@ export default {
           title: '移除追隨失敗，請稍候再試'
         })
       }
+    },
+    afterCreateReply(newReply) {
+      this.reply = { ...newReply }
+      this.createReply(newReply)
+      this.closeReplyModal()
     }
   }
 }
@@ -279,6 +295,7 @@ export default {
     svg {
       width: 24px;
       height: 24px;
+      cursor: pointer;
     }
     .title {
       margin-left: 16px;
