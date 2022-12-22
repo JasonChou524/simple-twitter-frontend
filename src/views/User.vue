@@ -1,7 +1,7 @@
 <template>
   <div class="user-container">
     <div class="row">
-      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
+      <nav-tabs class="col-3" @afterCreateTweet="afterCreateTweet" />
       <section class="col-6">
         <div class="user">
           <nav class="header">
@@ -116,11 +116,6 @@
       </section>
       <user-popular class="col-3" />
     </div>
-    <tweet-create-modal
-      v-if="isCreateModalShow"
-      @afterCreateTweet="afterCreateTweet"
-      @clickCloseBtn="closeCreateModal"
-    />
     <tweet-reply-modal
       v-if="isReplyModalOpen"
       @afterCreateReply="afterCreateReply"
@@ -131,7 +126,6 @@
 <script>
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
-import TweetCreateModal from '@/components/TweetCreateModal.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
 
 import { mapState, mapMutations } from 'vuex'
@@ -142,12 +136,10 @@ export default {
   components: {
     NavTabs,
     UserPopular,
-    TweetCreateModal,
     TweetReplyModal
   },
   data() {
     return {
-      isCreateModalShow: false,
       user: {
         id: -1,
         name: '',
@@ -259,14 +251,9 @@ export default {
       }
     },
     afterCreateTweet(newTweet) {
-      this.newTweet = { ...newTweet }
-      this.isCreateModalShow = false
-    },
-    openCreateModal() {
-      this.isCreateModalShow = true
-    },
-    closeCreateModal() {
-      this.isCreateModalShow = false
+      if (this.$route.params.id === this.currentUser.id) {
+        this.newTweet = { ...newTweet }
+      }
     },
     afterCreateReply(newReply) {
       this.reply = { ...newReply }

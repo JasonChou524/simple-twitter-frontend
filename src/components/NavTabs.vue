@@ -77,17 +77,25 @@
       </svg>
       <h5>登出</h5>
     </button>
+    <tweet-create-modal
+      v-if="isCreateModalShow"
+      @afterCreateTweet="afterCreateTweet"
+      @clickCloseBtn="closeCreateModal"
+    />
   </nav>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import TweetCreateModal from './TweetCreateModal.vue'
 export default {
+  components: { TweetCreateModal },
   data() {
     return {
       isHomeActive: false,
       isUserActive: false,
-      isCogActive: false
+      isCogActive: false,
+      isCreateModalShow: false
     }
   },
   computed: {
@@ -108,17 +116,30 @@ export default {
   },
   methods: {
     clickCreateBtn() {
-      this.$emit('clickCreateBtn')
+      this.isCreateModalShow = true
     },
     logout() {
       this.$store.commit('revokeAuthentication')
       this.$router.push('/signin')
+    },
+    openCreateModal() {
+      this.isCreateModalShow = true
+    },
+    closeCreateModal() {
+      this.isCreateModalShow = false
+    },
+    afterCreateTweet(newTweet) {
+      this.$emit('afterCreateTweet', newTweet)
+      this.isCreateModalShow = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.modal-background {
+  z-index: 10;
+}
 .navtabs {
   display: flex;
   flex-direction: column;

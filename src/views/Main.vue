@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="row">
-      <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
+      <nav-tabs class="col-3" @afterCreateTweet="afterCreateTweet" />
       <div class="main col-6">
         <div class="title">
           <h4>首頁</h4>
@@ -20,11 +20,6 @@
       </div>
       <user-popular class="col-3" />
     </div>
-    <tweet-create-modal
-      v-if="isCreateModalShow"
-      @afterCreateTweet="afterCreateTweet"
-      @clickCloseBtn="closeCreateModal"
-    />
     <tweet-reply-modal
       v-if="isReplyModalOpen"
       @afterCreateReply="afterCreateReply"
@@ -37,7 +32,6 @@ import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
 import TweetCard from '@/components/TweetCard.vue'
 import TweetCreateCard from '@/components/TweetCreateCard.vue'
-import TweetCreateModal from '@/components/TweetCreateModal.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
 
 import tweetsAPI from '@/apis/tweets'
@@ -51,13 +45,11 @@ export default {
     UserPopular,
     TweetCard,
     TweetCreateCard,
-    TweetCreateModal,
     TweetReplyModal
   },
   data() {
     return {
-      tweets: [],
-      isCreateModalShow: false
+      tweets: []
     }
   },
   computed: {
@@ -112,13 +104,6 @@ export default {
     },
     afterCreateTweet(newTweet) {
       this.tweets.unshift(newTweet)
-      this.isCreateModalShow = false
-    },
-    openCreateModal() {
-      this.isCreateModalShow = true
-    },
-    closeCreateModal() {
-      this.isCreateModalShow = false
     },
     afterCreateReply(newReply) {
       this.tweets = this.tweets.map((tweet) => {
