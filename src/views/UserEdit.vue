@@ -71,9 +71,10 @@ export default {
         })
         this.$router.push('/')
       } catch (error) {
+        const { data } = error.response
         Toast.fire({
           icon: 'error',
-          title: `${error.message}`
+          title: `${data.message}`
         })
         this.isProcessing = false
       }
