@@ -37,7 +37,7 @@
           </div>
           <div class="user-card">
             <div v-if="pageUserId === currentUser.id" class="card-header">
-              <button>編輯個人資料</button>
+              <button @click="openEditModal">編輯個人資料</button>
             </div>
             <div v-else class="card-header">
               <button
@@ -116,6 +116,12 @@
       </section>
       <user-popular class="col-3" />
     </div>
+    <user-edit-modal
+      v-if="isEditModalOpen"
+      :user="user"
+      @clickCloseBtn="closeEditModal"
+      @handleSubmit="afterSubmit"
+    />
     <tweet-reply-modal
       v-if="isReplyModalOpen"
       @afterCreateReply="afterCreateReply"
@@ -126,6 +132,7 @@
 <script>
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
+import UserEditModal from '../components/UserEditModal.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
 
 import { mapState, mapMutations } from 'vuex'
@@ -136,7 +143,8 @@ export default {
   components: {
     NavTabs,
     UserPopular,
-    TweetReplyModal
+    TweetReplyModal,
+    UserEditModal
   },
   data() {
     return {
@@ -153,7 +161,8 @@ export default {
         isFollowed: false
       },
       reply: {},
-      newTweet: {}
+      newTweet: {},
+      isEditModalOpen: false
     }
   },
   computed: {
@@ -259,6 +268,18 @@ export default {
       this.reply = { ...newReply }
       this.createReply(newReply)
       this.closeReplyModal()
+    },
+    openEditModal() {
+      if (this.pageUserId === this.currentUser.id) {
+        this.isEditModalOpen = true
+      }
+    },
+    closeEditModal() {
+      this.isEditModalOpen = false
+    },
+    afterSubmit() {
+      const { id } = this.$route.params
+      this.fetchUser(id)
     }
   }
 }
@@ -373,6 +394,7 @@ export default {
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
+      white-space: pre;
       &.account {
         margin-bottom: 8px;
         color: $Secondary;
