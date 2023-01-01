@@ -1,28 +1,38 @@
 <template>
   <div>
-    <tweet-card
-      v-for="tweet in tweets"
-      :key="tweet.id"
-      :tweet="tweet"
-      @afterAddLike="afterAddLike"
-      @afterRemoveLike="afterRemoveLike"
-    />
+    <template v-if="isLoading">
+      <spinner />
+    </template>
+    <template v-else>
+      <tweet-card
+        v-for="tweet in tweets"
+        :key="tweet.id"
+        :tweet="tweet"
+        @afterAddLike="afterAddLike"
+        @afterRemoveLike="afterRemoveLike"
+      />
+    </template>
   </div>
 </template>
 
 <script>
 import TweetCard from './TweetCard.vue'
+import Spinner from './Spinner.vue'
 
 import usersAPI from '@/apis/users'
 import { Toast } from '@/utils/helpers'
 
 export default {
-  components: { TweetCard },
+  components: { TweetCard, Spinner },
   props: ['user', 'reply'],
   data() {
     return {
-      tweets: []
+      tweets: [],
+      isLoading: true
     }
+  },
+  created() {
+    this.fetchUserLikes()
   },
   watch: {
     user() {
@@ -45,6 +55,7 @@ export default {
           isLiked: true,
           User: this.user
         }))
+        this.isLoading = false
       } catch (error) {
         Toast.fire({
           icon: 'error',

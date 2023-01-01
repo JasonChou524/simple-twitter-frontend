@@ -2,7 +2,8 @@
   <div class="user-container">
     <div class="row">
       <nav-tabs class="col-3" @afterCreateTweet="afterCreateTweet" />
-      <section class="col-6">
+      <spinner v-if="isLoading" class="col-6" />
+      <section v-else class="col-6">
         <div class="user">
           <nav class="header">
             <a @click="$router.go(-1)">
@@ -134,6 +135,7 @@ import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
 import UserEditModal from '../components/UserEditModal.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
+import Spinner from '@/components/Spinner.vue'
 
 import { mapState, mapMutations } from 'vuex'
 import usersAPI from '@/apis/users'
@@ -144,7 +146,8 @@ export default {
     NavTabs,
     UserPopular,
     TweetReplyModal,
-    UserEditModal
+    UserEditModal,
+    Spinner
   },
   data() {
     return {
@@ -162,7 +165,8 @@ export default {
       },
       reply: {},
       newTweet: {},
-      isEditModalOpen: false
+      isEditModalOpen: false,
+      isLoading: true
     }
   },
   computed: {
@@ -176,8 +180,11 @@ export default {
     this.fetchUser(id)
   },
   beforeRouteUpdate(to, from, next) {
-    const userId = to.params.id
-    this.fetchUser(userId)
+    if (from.params.id !== to.params.id) {
+      this.isLoading = true
+      const userId = to.params.id
+      this.fetchUser(userId)
+    }
     next()
   },
   methods: {
@@ -209,6 +216,7 @@ export default {
           Followers,
           isFollowed
         }
+        this.isLoading = false
       } catch (error) {
         Toast.fire({
           icon: 'error',

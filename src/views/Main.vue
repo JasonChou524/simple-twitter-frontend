@@ -2,7 +2,8 @@
   <div class="main-container">
     <div class="row">
       <nav-tabs class="col-3" @afterCreateTweet="afterCreateTweet" />
-      <div class="main col-6">
+      <spinner v-if="isLoading" class="main col-6" />
+      <div v-else class="main col-6">
         <div class="title">
           <h4>首頁</h4>
         </div>
@@ -33,6 +34,7 @@ import UserPopular from '@/components/UserPopular.vue'
 import TweetCard from '@/components/TweetCard.vue'
 import TweetCreateCard from '@/components/TweetCreateCard.vue'
 import TweetReplyModal from '@/components/TweetReplyModal.vue'
+import Spinner from '@/components/Spinner.vue'
 
 import tweetsAPI from '@/apis/tweets'
 import { Toast } from '@/utils/helpers'
@@ -45,11 +47,13 @@ export default {
     UserPopular,
     TweetCard,
     TweetCreateCard,
-    TweetReplyModal
+    TweetReplyModal,
+    Spinner
   },
   data() {
     return {
-      tweets: []
+      tweets: [],
+      isLoading: true
     }
   },
   computed: {
@@ -71,6 +75,7 @@ export default {
           LikesCount: tweet.likeCount,
           isLiked: tweet.isLiked
         }))
+        this.isLoading = false
       } catch (error) {
         Toast.fire({
           icon: 'error',
