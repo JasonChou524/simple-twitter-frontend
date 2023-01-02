@@ -1,27 +1,37 @@
 <template>
   <div>
-    <reply-card
-      v-for="reply in replies"
-      :key="reply.id"
-      :reply="reply"
-      :tweetAccount="reply.Tweet.User.account"
-    />
+    <template v-if="isLoading">
+      <spinner />
+    </template>
+    <template v-else>
+      <reply-card
+        v-for="reply in replies"
+        :key="reply.id"
+        :reply="reply"
+        :tweetAccount="reply.Tweet.User.account"
+      />
+    </template>
   </div>
 </template>
 
 <script>
 import ReplyCard from './ReplyCard.vue'
+import Spinner from './Spinner.vue'
 
 import usersAPI from '@/apis/users'
 import { Toast } from '@/utils/helpers'
 
 export default {
-  components: { ReplyCard },
+  components: { ReplyCard, Spinner },
   props: ['user'],
   data() {
     return {
-      replies: []
+      replies: [],
+      isLoading: true
     }
+  },
+  created() {
+    this.fetchUserReplies()
   },
   watch: {
     user() {
@@ -33,21 +43,10 @@ export default {
       try {
         const { data } = await usersAPI.getUserReplies({ id: this.user.id })
         this.replies = data.map((reply) => ({
-          // {
-          //   "id": 1, // Reply Id
-          //   "comment": "123", // Reply comment
-          //   "createdAt": "2022-08-02T16:49:11.000Z", // Reply 更新時間
-          //   "Tweet": {
-          //       "id": 1, // 該篇推文ID
-          //       "User": {
-          //           "id": 1, // 該篇推文使用者的 ID
-          //           "account": "8", // 該篇推文使用者的 帳號
-          //       }
-          //   }
-          // }
           ...reply,
           User: this.user
         }))
+        this.isLoading = false
       } catch (error) {
         Toast.fire({
           icon: 'error',

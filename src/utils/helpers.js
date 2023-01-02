@@ -12,7 +12,8 @@ dayjs.locale('zh-tw')
 export { dayjs }
 
 // axios
-const baseURL = 'http://localhost:3000/api'
+// const baseURL = 'http://localhost:3000/api'
+const baseURL = 'https://young-springs-47906.herokuapp.com/api'
 
 export const apiHelper = axios.create({
   baseURL

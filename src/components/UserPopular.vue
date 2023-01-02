@@ -1,6 +1,7 @@
 <template>
   <div class="wrap">
-    <div class="popular-list">
+    <spinner v-if="isLoading" />
+    <div v-else class="popular-list">
       <div class="title">
         <h4>推薦跟隨</h4>
       </div>
@@ -40,14 +41,20 @@
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue'
+
 import usersAPI from '@/apis/users'
 import { Toast } from '@/utils/helpers'
 import { mapState } from 'vuex'
 
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
-      users: []
+      users: [],
+      isLoading: true
     }
   },
   computed: {
@@ -58,14 +65,25 @@ export default {
   },
   methods: {
     async fetchUsers() {
-      const { data } = await usersAPI.getPopularUsers()
-      this.users = data.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-        avatar: user.avatar,
-        account: user.account,
-        isFollowed: user.isFollowed
-      }))
+      try {
+        const { data } = await usersAPI.getPopularUsers()
+        if (data.status === 'error') {
+          throw new Error(data)
+        }
+        this.users = data.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          account: user.account,
+          isFollowed: user.isFollowed
+        }))
+        this.isLoading = false
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得熱門使用者，請稍候再試'
+        })
+      }
     },
     async addFollow(id) {
       try {

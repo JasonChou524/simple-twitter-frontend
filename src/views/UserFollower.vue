@@ -43,13 +43,18 @@
               </li>
             </ul>
           </nav>
-          <follow-card
-            v-for="userFollower in userFollowers"
-            :key="userFollower.id"
-            :user-follow="userFollower"
-            @afterAddFollow="afterAddFollow"
-            @afterRemoveFollow="afterRemoveFollow"
-          />
+          <template v-if="isLoading">
+            <spinner />
+          </template>
+          <template v-else>
+            <follow-card
+              v-for="userFollower in userFollowers"
+              :key="userFollower.id"
+              :user-follow="userFollower"
+              @afterAddFollow="afterAddFollow"
+              @afterRemoveFollow="afterRemoveFollow"
+            />
+          </template>
         </div>
       </section>
       <user-popular class="col-3" />
@@ -61,6 +66,7 @@
 import NavTabs from '@/components/NavTabs.vue'
 import UserPopular from '@/components/UserPopular.vue'
 import FollowCard from '@/components/FollowCard.vue'
+import Spinner from '@/components/Spinner.vue'
 
 import usersAPI from '@/apis/users'
 import { Toast } from '@/utils/helpers'
@@ -69,12 +75,14 @@ export default {
   components: {
     NavTabs,
     UserPopular,
-    FollowCard
+    FollowCard,
+    Spinner
   },
   data() {
     return {
       user: {},
-      userFollowers: []
+      userFollowers: [],
+      isLoading: true
     }
   },
   created() {
@@ -112,6 +120,7 @@ export default {
           introduction: userFollower.followerIntroduction,
           isFollow: userFollower.isFollower
         }))
+        this.isLoading = false
       } catch (error) {
         Toast.fire({
           icon: 'error',
