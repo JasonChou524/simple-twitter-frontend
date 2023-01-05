@@ -65,7 +65,7 @@
             />
           </label>
 
-          <button
+          <!-- <button
             class="svg-btn clear-btn"
             type="button"
             @click="clearFrontCover"
@@ -75,7 +75,7 @@
                 d="M13.4141 11.9999L19.2071 6.20687C19.5971 5.81687 19.5971 5.18388 19.2071 4.79288C18.8171 4.40188 18.1841 4.40288 17.7931 4.79288L12.0001 10.5859L6.20712 4.79288C5.81712 4.40288 5.18412 4.40288 4.79312 4.79288C4.40212 5.18288 4.40312 5.81587 4.79312 6.20687L10.5861 11.9999L4.79312 17.7929C4.40312 18.1829 4.40312 18.8159 4.79312 19.2069C4.98812 19.4019 5.24312 19.4999 5.50012 19.4999C5.75712 19.4999 6.01212 19.4019 6.20712 19.2069L12.0001 13.4139L17.7931 19.2069C17.9881 19.4019 18.2431 19.4999 18.5001 19.4999C18.7571 19.4999 19.0121 19.4019 19.2071 19.2069C19.5971 18.8169 19.5971 18.1839 19.2071 17.7929L13.4141 11.9999Z"
               />
             </svg>
-          </button>
+          </button> -->
         </div>
       </div>
       <ul class="card-input">
@@ -89,7 +89,7 @@
             placeholder="請輸入使用者名稱"
             required
           />
-          <p>{{ formData.name.length }}/50</p>
+          <p>{{ nameLength }}/50</p>
         </li>
         <li class="input-area introduction">
           <label for="introduction">自我介紹</label>
@@ -100,7 +100,7 @@
             name="introduction"
             placeholder="請輸入自我介紹"
           />
-          <p>{{ formData.introduction.length }}/160</p>
+          <p>{{ introductionLength }}/160</p>
         </li>
       </ul>
     </form>
@@ -115,6 +115,20 @@ export default {
   data() {
     return {
       formData: {}
+    }
+  },
+  computed: {
+    nameLength() {
+      if (this.formData.name) {
+        return this.formData.name.length
+      }
+      return 0
+    },
+    introductionLength() {
+      if (this.formData.introduction) {
+        return this.formData.introduction.length
+      }
+      return 0
     }
   },
   created() {
@@ -133,7 +147,10 @@ export default {
           })
           return
         }
-        if (this.formData.introduction.trim().length === 0) {
+        if (
+          !this.formData.introduction ||
+          this.formData.introduction.trim().length === 0
+        ) {
           Toast.fire({
             icon: 'error',
             title: '自我介紹不能空白'
@@ -163,17 +180,23 @@ export default {
         this.$emit('handleSubmit')
         this.$emit('clickCloseBtn')
       } catch (error) {
-        const { data } = error.response
-        console.log(data.message)
-        Toast.fire({
-          icon: 'error',
-          title: `${data.message}`
-        })
+        if (error.response) {
+          const { data } = error.response
+          Toast.fire({
+            icon: 'error',
+            title: `${data.message}`
+          })
+        } else {
+          Toast.fire({
+            icon: 'error',
+            title: '無法修改資料'
+          })
+        }
       }
     },
-    clearFrontCover() {
-      this.formData.frontCover = ''
-    },
+    // clearFrontCover() {
+    //   this.formData.frontCover = '/img/front-cover.fcac2f20.png'
+    // },
     uploadImage(type, e) {
       const img = e.target.files[0]
       if (img) {
