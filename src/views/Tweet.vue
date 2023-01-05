@@ -2,7 +2,8 @@
   <div class="tweet-container">
     <div class="row">
       <nav-tabs class="col-3" @clickCreateBtn="openCreateModal" />
-      <section class="col-6">
+      <spinner v-if="isLoading" class="col-6" />
+      <section v-else class="col-6">
         <div class="tweet">
           <div class="title">
             <a @click="$router.go(-1)">
@@ -98,11 +99,12 @@
 import NavTabs from '../components/NavTabs.vue'
 import UserPopular from '../components/UserPopular.vue'
 import ReplyCard from '../components/ReplyCard.vue'
-import TweetCreateModal from '@/components/TweetCreateModal.vue'
+import TweetCreateModal from '../components/TweetCreateModal.vue'
 import TweetReplyModal from '../components/TweetReplyModal.vue'
+import Spinner from '../components/Spinner.vue'
 
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { dayjs } from '@/utils/helpers'
+import { dayjs, Toast } from '@/utils/helpers'
 
 export default {
   components: {
@@ -110,11 +112,13 @@ export default {
     UserPopular,
     ReplyCard,
     TweetCreateModal,
-    TweetReplyModal
+    TweetReplyModal,
+    Spinner
   },
   data() {
     return {
-      isCreateModalShow: false
+      isCreateModalShow: false,
+      isLoading: true
     }
   },
   computed: {
@@ -126,9 +130,17 @@ export default {
       return dayjs(this.tweet.createdAt).format('A HH:MM')
     }
   },
-  created() {
-    const TweetId = this.$route.params.id
-    this.fetchTweet(TweetId)
+  async created() {
+    try {
+      const TweetId = this.$route.params.id
+      await this.fetchTweet(TweetId)
+      this.isLoading = false
+    } catch {
+      Toast.fire({
+        icon: 'error',
+        title: '無法取得推文，請稍候再試'
+      })
+    }
   },
   methods: {
     ...mapMutations(['openReplyModal', 'closeReplyModal', 'createReply']),
