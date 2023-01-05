@@ -29,7 +29,6 @@ export default {
   methods: {
     async userSignUp(user) {
       try {
-        console.log('userSignUp', user)
         if (
           !user.account.trim() ||
           !user.name.trim() ||
