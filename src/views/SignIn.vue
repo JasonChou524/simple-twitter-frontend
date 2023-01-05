@@ -29,9 +29,7 @@
       </div>
       <button type="submit" :disabled="isProcessing">登入</button>
       <nav>
-        <a class="nav-link" href="">後台登入</a>
-        <p>．</p>
-        <a class="nav-link" href="">註冊</a>
+        <router-link to="/signup" class="nav-link">註冊</router-link>
       </nav>
     </form>
   </div>
