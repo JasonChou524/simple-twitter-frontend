@@ -1,14 +1,21 @@
 # simple-twitter-frontend
 
+![main-page](./src/assets/image/main-page.png)
+
 ## 簡介
 
 - 本專案是以 twitter 規格為發想的 simple twitter 專案。
 - 前端使用 Vue 2、Vue Router、Vuex、SCSS、Bootstrap 5 開發使用者介面，後端使用 Node.js 搭配 Express 框架建構，使用關聯式資料庫 MySQL 做為 database。
 - 本專案為前端開發之專案。
 
-## Github Page
+## 專案網站入口
 
 [Simple Twitter](https://csw8524.github.io/simple-twitter-frontend/#/)
+
+### 測試帳號
+
+account: user1  
+password: 12345678
 
 ## 產品功能
 
@@ -20,7 +27,7 @@
 
 ## 後端專案
 
-[後端 repo](https://github.com/csw8524/SimpleTwitter)
+[後端專案 Repo 連結](https://github.com/csw8524/SimpleTwitter)
 
 ## 啟動專案
 
