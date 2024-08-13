@@ -10,7 +10,7 @@
 
 ## 專案網站入口
 
-[Simple Twitter](https://csw8524.github.io/simple-twitter-frontend/#/)
+~~[Simple Twitter](https://csw8524.github.io/simple-twitter-frontend/#/)~~(後端伺服器施工中)
 
 ### 測試帳號
 
